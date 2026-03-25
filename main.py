@@ -10,19 +10,26 @@ import httpx
 import argparse
 from fastmcp import FastMCP
 from typing import Any
+from dataclasses import dataclass
 
 
 
 mcp = FastMCP("Deutscher Wetterdienst")
 
-dwd_base_url = "https://s3.eu-central-1.amazonaws.com/app-prod-static.warnwetter.de/v16/"
+@dataclass
+class ApiUrls:
+    static_v16 = "https://s3.eu-central-1.amazonaws.com/app-prod-static.warnwetter.de/v16/"
+    static_v30 = "https://dwd.api.proxy.bund.dev/v30/"
 
-async def request_dwd_data(endpoint: str, additional_headers: dict = None, params:dict = None) -> Any:
+
+
+async def request_dwd_data(base_url: str, endpoint: str, additional_headers: dict = None, params:dict = None) -> Any:
     """
     Fetch data from the Deutscher Wetterdienst API.
 
     Args:
-        endpoint: The API endpoint path to request (relative to dwd_base_url)
+        base_url: The base URL for the DWD API
+        endpoint: The API endpoint path to request (relative to base_url)
         additional_headers: Optional dictionary of additional HTTP headers to include in the request
         params: Optional dictionary of query parameters for the request
 
@@ -40,7 +47,7 @@ async def request_dwd_data(endpoint: str, additional_headers: dict = None, param
         headers = headers | additional_headers
     async with httpx.AsyncClient() as client:
         try:
-            response = await client.get(f"{dwd_base_url}{endpoint}", headers=headers, params=params)
+            response = await client.get(f"{base_url}{endpoint}", headers=headers, params=params)
             response.raise_for_status()
             return response.json()
         except httpx.HTTPError as e:
@@ -58,7 +65,7 @@ async def get_weather_alerts() -> Any:
         Dictionary containing weather alert data
     """
     alert_url = "warnings_nowcast_en.json"
-    data = await request_dwd_data(alert_url)
+    data = await request_dwd_data( ApiUrls.static_v16,alert_url)
     if not data:
         return {"No weather alerts found."}
     else:
@@ -75,7 +82,7 @@ async def get_weather_from_station(ids: list[str]) -> Any:
     station_url = f"stationOverviewExtended"
     if not ids:
         return {"No station IDs provided."}
-    data = await request_dwd_data(station_url, params={"stationIds": ids})
+    data = await request_dwd_data(ApiUrls.static_v30, station_url, params={"stationIds": ids})
     if not data:
         return {"No weather data found for the provided station IDs."}
     else:
