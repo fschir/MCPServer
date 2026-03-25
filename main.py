@@ -6,6 +6,7 @@ fetching data from the DWD's public API endpoints.
 """
 
 import asyncio
+import logging
 import httpx
 import argparse
 from fastmcp import FastMCP
@@ -49,9 +50,10 @@ async def request_dwd_data(base_url: str, endpoint: str, additional_headers: dic
         try:
             response = await client.get(f"{base_url}{endpoint}", headers=headers, params=params)
             response.raise_for_status()
+            logging.info(f"Successfully fetched data from {base_url}{endpoint}")
             return response.json()
         except httpx.HTTPError as e:
-            print(f"Error fetching DWD data from {endpoint}: {e}")
+            logging.error(f"Error fetching DWD data from {base_url}{endpoint}: {e}")
             raise   
 
 @mcp.tool(name="get_weather_alerts", description="Get current weather alerts from the Deutscher Wetterdienst.")
@@ -69,7 +71,7 @@ async def get_weather_alerts() -> Any:
     if not data:
         return {"No weather alerts found."}
     else:
-        print(data)
+        logging.debug(f"Weather alerts data: {data}")
         return data
 
 @mcp.tool(name="get_weather_from_station", description="Get current weather data from specific weather stations by their IDs.")
@@ -86,6 +88,7 @@ async def get_weather_from_station(ids: list[str]) -> Any:
     if not data:
         return {"No weather data found for the provided station IDs."}
     else:
+        logging.debug(f"Weather data for station IDs {ids}: {data}")
         return data
 
 
