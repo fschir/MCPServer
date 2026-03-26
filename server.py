@@ -12,7 +12,6 @@ import argparse
 from fastmcp import FastMCP
 from typing import Any
 from dataclasses import dataclass
-import src.utils as utils
 
 
 
@@ -104,6 +103,8 @@ async def request_crowd_weather_data() -> Any:
     else:
         logging.info(f"Crowd weather data: {data}")
         return data
+
+
 
 
 

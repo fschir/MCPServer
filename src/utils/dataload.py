@@ -35,13 +35,6 @@ def fetch_files_from_ftp(ftp_config: FTPConfig, local_dir: str) -> List[str]:
     return files
 
 
-        
-        
-    
-
-    
-
-
 if __name__ == "__main__":
     ftp_config = FTPConfig()
     fetch_files_from_ftp(ftp_config, f"{os.getcwd()}/data")

@@ -25,18 +25,6 @@ Fetches current weather data from specific weather stations using their station 
 ### `get_crowd_weather_data`
 Gets current crowd-sourced weather reports from the Deutscher Wetterdienst.
 
-### `fetch_ftp_files`
-Downloads all files from a specific directory on the DWD FTP server.
-
-**Parameters:**
-- `remote_dir`: Remote directory path to fetch files from (optional, defaults to root)
-
-### `list_ftp_directory`
-Lists all files in a specific directory on the DWD FTP server.
-
-**Parameters:**
-- `remote_dir`: Remote directory path to list files from (optional, defaults to root)
-
 ## Quick Start
 
 ### Using Docker (Recommended)
@@ -97,16 +85,13 @@ The server integrates with Deutscher Wetterdienst's public APIs:
 
 - **Static API v16**: `https://s3.eu-central-1.amazonaws.com/app-prod-static.warnwetter.de/v16/`
 - **API v30**: `https://dwd.api.proxy.bund.dev/v30/`
-- **FTP Server**: `opendata.dwd.de` (anonymous access)
 
-All requests include appropriate User-Agent headers and handle HTTP/FTP errors gracefully.
+All requests include appropriate User-Agent headers and handle HTTP errors gracefully.
 
 ## Dependencies
 
 - `fastmcp`: MCP server framework
 - `httpx`: Asynchronous HTTP client
-- `pandas`: Data manipulation and analysis
-- `numpy`: Numerical computing
 
 ## Development
 
@@ -114,26 +99,11 @@ All requests include appropriate User-Agent headers and handle HTTP/FTP errors g
 
 ```
 MCPServer/
-├── server.py            # Server implementation alternative entrypoint
-├── src/                 # Reusable helpers and FTP client utilities
-│   ├── __init__.py
-│   └── utils.py
+├── server.py            # Server implementation
 ├── requirements.txt     # Python dependencies
-├── Dockerfile           # Docker container configuration
-├── docker-compose.yml   # Docker Compose setup
-└── README.md            # This file
-```
-
-### Python Import / Package Usage
-
-You can import FTP utilities directly after setting up `src/__init__.py`:
-
-```python
-from src import FTPConfig, fetch_all_ftp_files
-
-ftp_config = FTPConfig()
-results = fetch_all_ftp_files(ftp_config, remote_dir="poi")
-print(results)
+├── Dockerfile          # Docker container configuration
+├── docker-compose.yml  # Docker Compose setup
+└── README.md           # This file
 ```
 
 ### Building

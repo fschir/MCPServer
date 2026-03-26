@@ -1,2 +1,2 @@
-*.log 
-data/*
+mcp_server.log
+fastmcp_dwd.log
