@@ -50,10 +50,10 @@ async def request_dwd_data(base_url: str, endpoint: str, additional_headers: dic
         try:
             response = await client.get(f"{base_url}{endpoint}", headers=headers, params=params)
             response.raise_for_status()
-            logging.debug(f"Successfully fetched data from {base_url}{endpoint}")
+            logging.info(f"Successfully fetched data from {base_url}{endpoint}")
             return response.json()
         except httpx.HTTPError as e:
-            logging.error(f"Error fetching DWD data from {base_url}{endpoint}: {e}")
+            logging.info(f"Error fetching DWD data from {base_url}{endpoint}: {e}")
             raise   
 
 @mcp.tool(name="get_weather_alerts", description="Get current weather alerts from the Deutscher Wetterdienst.")
@@ -67,11 +67,11 @@ async def get_weather_alerts() -> Any:
         Dictionary containing weather alert data
     """
     alert_url = "warnings_nowcast_en.json"
-    data = await request_dwd_data( ApiUrls.static_v16,alert_url)
+    data = await request_dwd_data(ApiUrls.static_v16,alert_url)
     if not data:
         return {"No weather alerts found."}
     else:
-        logging.debug(f"Weather alerts data: {data}")
+        logging.info(f"Weather alerts data: {data}")
         return data
 
 @mcp.tool(name="get_weather_from_station", description="Get current weather data from specific weather stations by their IDs.")
@@ -88,7 +88,20 @@ async def get_weather_from_station(ids: list[str]) -> Any:
     if not data:
         return {"No weather data found for the provided station IDs."}
     else:
-        logging.debug(f"Weather data for station IDs {ids}: {data}")
+        logging.info(f"Weather data for station IDs {ids}: {data}")
+        return data
+
+@mcp.tool(name="get_crowd_weather_data", description="Get current crowd-sourced weather reports from the Deutscher Wetterdienst.")
+async def request_crowd_weather_data() -> Any:
+    """
+    Retrieve current crowd-sourced weather reports from the Deutscher Wetterdienst.
+    """
+    crowd_url = "crowd_meldungen_overview_v2.json"
+    data = await request_dwd_data(ApiUrls.static_v16, crowd_url)
+    if not data:
+        return {"No crowd weather data found."}
+    else:
+        logging.info(f"Crowd weather data: {data}")
         return data
 
 
